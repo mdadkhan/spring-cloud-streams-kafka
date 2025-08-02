@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: msgkafka
+  cloud:
+   function:
+     definition: msgReceiver
+   stream:
+    bindings:
+#     input:
+     msgReceiver-in-0:
+      destination: msgreceiver-communication
+      group: ${spring.application.name} # This becomes the Kafka consumer group.id
+#      content-type: application/json
+#      binder: local_rabbit
+#    output:
+     msgSender-out-0:
+      destination: msgreceiver-communication
+      group: ${spring.application.name}
+      content-type: application/json
+#      binder: local_rabbit     
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#    connection-timeout: 10s
+#    virtual-host: DEV
+   kafka:
+    binder:
+      brokers: localhost:9092
+      auto-create-topics: true      # For production, topics should be pre-created with partition count
+
+#    bindings:
+      msgReceiver-in-0:
+        consumer:
+          concurrency: 4  # Number of concurrent consumers
+          autoBindDlq: true  # Enables Dead Letter Queue
+          dlq-name: msgreceiver-communication.DLT
+          max-attempts: 3               # <-- Retry 3 times before sending to DLQ or failing
+          back-off-initial-interval: 2000   # Retry starts with 2 seconds
+          partitioned: true             # Partition-aware consumer
+      msgSender-out-0:
+        producer:
+          partitionCount: 8
+          partitionKeyExpression: payload.id
+server:
+   port: 8097
+   servlet:
+     context-path: /api
