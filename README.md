@@ -12,6 +12,16 @@ GET http://localhost:8096/api/employeeMsg/13
 
 # Getting Started
 
+copy the docker-compose.yml to an empty folder or navigate it to the folder.
+cd {}
+docker compose up -d
+ 
+Launch offset-explorer app for Kafka administration. 
+
+List the topics:
+docker exec -it <container_ID> /opt/kafka/bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+
+
 ### Spring Cloud 2023.0.0 used. (2023.0.3 has some object serialization issue)
 
 #### Advantage of using spring-cloud-stream is that we can replace rabbitMQ to kafka or any other broker very easily. It can be used as abstraction.
